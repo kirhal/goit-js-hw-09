@@ -7,6 +7,7 @@ const minutesValueEl = document.querySelector('span[data-minutes]');
 const hoursValueEl = document.querySelector('span[data-hours]');
 const daysValueEl = document.querySelector('span[data-days]');
 let selectedDate = 0;
+let isActive = false;
 
 startBtnEl.setAttribute('disabled', true);
 startBtnEl.addEventListener('click', onStartBtnClick);
@@ -20,9 +21,12 @@ const options = {
     if (selectedDates[0] < options.defaultDate) {
       startBtnEl.setAttribute('disabled', true);
       return alert('Please choose a date in the future');
+    } else if (selectedDate) {
+      return;
+    } else {
+      startBtnEl.removeAttribute('disabled');
+      selectedDate = selectedDates[0];
     }
-    startBtnEl.removeAttribute('disabled');
-    selectedDate = selectedDates[0];
   },
 };
 
@@ -53,7 +57,11 @@ function addLeadingZero(value) {
   return String(value).padStart(2, '0');
 }
 
-function onStartBtnClick(e) {
+function onStartBtnClick() {
+  if (isActive) {
+    return clearInterval();
+  }
+  isActive = true;
   setInterval(() => {
     const currentTime = Date.now();
     const resultTime = selectedDate - currentTime;
