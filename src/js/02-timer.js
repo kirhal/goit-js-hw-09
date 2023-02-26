@@ -24,8 +24,6 @@ const options = {
     startBtnEl.removeAttribute('disabled');
     selectedDate = selectedDates[0];
   },
-
-  // onOpen(selectedDates) {},
 };
 
 flatpickr('#datetime-picker', options);
@@ -38,29 +36,33 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = Math.floor(ms / day);
+  const days = addLeadingZero(Math.floor(ms / day));
   // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
+  const hours = addLeadingZero(Math.floor((ms % day) / hour));
   // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
   // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const seconds = addLeadingZero(
+    Math.floor((((ms % day) % hour) % minute) / second)
+  );
 
   return { days, hours, minutes, seconds };
 }
 
 function addLeadingZero(value) {
-  padStart();
+  return String(value).padStart(2, '0');
 }
 
 function onStartBtnClick(e) {
   setInterval(() => {
     const currentTime = Date.now();
     const resultTime = selectedDate - currentTime;
-    const convertedTime = convertMs(resultTime);
-    secondsValueEl.textContent = convertedTime.seconds;
-    minutesValueEl.textContent = convertedTime.minutes;
-    hoursValueEl.textContent = convertedTime.hours;
-    daysValueEl.textContent = convertedTime.days;
+    const { days, hours, minutes, seconds } = (convertedTime =
+      convertMs(resultTime));
+    secondsValueEl.textContent = seconds;
+    minutesValueEl.textContent = minutes;
+    hoursValueEl.textContent = hours;
+    daysValueEl.textContent = days;
+    console.log(`${days}:${hours}:${minutes}:${seconds}`);
   }, 1000);
 }
