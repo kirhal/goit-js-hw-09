@@ -6,27 +6,23 @@ const secondsValueEl = document.querySelector('span[data-seconds]');
 const minutesValueEl = document.querySelector('span[data-minutes]');
 const hoursValueEl = document.querySelector('span[data-hours]');
 const daysValueEl = document.querySelector('span[data-days]');
-const pickerDateEl = document.querySelector('#datetime-picker');
+let selectedDate = 0;
+
+startBtnEl.setAttribute('disabled', true);
+startBtnEl.addEventListener('click', onStartBtnClick);
 
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: Date.now(),
   minuteIncrement: 1,
-  onClose(selectedDates) {
+  onChange(selectedDates) {
     if (selectedDates[0] < options.defaultDate) {
+      startBtnEl.setAttribute('disabled', true);
       return alert('Please choose a date in the future');
     }
-
-    setInterval(() => {
-      const currentTime = Date.now();
-      const resultTime = selectedDates[0] - currentTime;
-      const convertedTime = convertMs(resultTime);
-      secondsValueEl.textContent = convertedTime.seconds;
-      minutesValueEl.textContent = convertedTime.minutes;
-      hoursValueEl.textContent = convertedTime.hours;
-      daysValueEl.textContent = convertedTime.days;
-    }, 1000);
+    startBtnEl.removeAttribute('disabled');
+    selectedDate = selectedDates[0];
   },
 
   // onOpen(selectedDates) {},
@@ -55,4 +51,16 @@ function convertMs(ms) {
 
 function addLeadingZero(value) {
   padStart();
+}
+
+function onStartBtnClick(e) {
+  setInterval(() => {
+    const currentTime = Date.now();
+    const resultTime = selectedDate - currentTime;
+    const convertedTime = convertMs(resultTime);
+    secondsValueEl.textContent = convertedTime.seconds;
+    minutesValueEl.textContent = convertedTime.minutes;
+    hoursValueEl.textContent = convertedTime.hours;
+    daysValueEl.textContent = convertedTime.days;
+  }, 1000);
 }
