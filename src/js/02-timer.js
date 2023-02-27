@@ -35,7 +35,6 @@ const timer = {
   stop() {
     clearInterval(this.intervalFn);
     this.isActive = false;
-    startBtnEl.setAttribute('disabled', true);
   },
 };
 
@@ -57,13 +56,12 @@ const options = {
     }
   },
 };
+flatpickr('#datetime-picker', options);
 
 startBtnEl.setAttribute('disabled', true);
 startBtnEl.addEventListener('click', () => {
   timer.start();
 });
-
-flatpickr('#datetime-picker', options);
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
