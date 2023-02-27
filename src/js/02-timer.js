@@ -1,34 +1,67 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-const startBtnEl = document.querySelector('button');
+const startBtnEl = document.querySelector('button[data-start]');
 const secondsValueEl = document.querySelector('span[data-seconds]');
 const minutesValueEl = document.querySelector('span[data-minutes]');
 const hoursValueEl = document.querySelector('span[data-hours]');
 const daysValueEl = document.querySelector('span[data-days]');
-let selectedDate = 0;
-let isActive = false;
 
-startBtnEl.setAttribute('disabled', true);
-startBtnEl.addEventListener('click', onStartBtnClick);
+const timer = {
+  intervalFn: null,
+  selectedDate: null,
+  isActive: false,
+  resultTime: null,
+  start() {
+    if (this.isActive) {
+      return;
+    }
+    this.isActive = true;
+    this.intervalFn = setInterval(() => {
+      const currentTime = Date.now();
+      this.resultTime = this.selectedDate - currentTime;
+      if (this.resultTime > 0) {
+        const { days, hours, minutes, seconds } = convertMs(this.resultTime);
+        secondsValueEl.textContent = seconds;
+        minutesValueEl.textContent = minutes;
+        hoursValueEl.textContent = hours;
+        66;
+        daysValueEl.textContent = days;
+      } else {
+        this.stop();
+      }
+    }, 1000);
+  },
+  stop() {
+    clearInterval(this.intervalFn);
+    this.isActive = false;
+    startBtnEl.setAttribute('disabled', true);
+  },
+};
 
 const options = {
+  enableSeconds: true,
   enableTime: true,
   time_24hr: true,
   defaultDate: Date.now(),
   minuteIncrement: 1,
-  onChange(selectedDates) {
+  onClose(selectedDates) {
     if (selectedDates[0] < options.defaultDate) {
       startBtnEl.setAttribute('disabled', true);
       return alert('Please choose a date in the future');
-    } else if (selectedDate) {
+    } else if (timer.selectedDate) {
       return;
     } else {
       startBtnEl.removeAttribute('disabled');
-      selectedDate = selectedDates[0];
+      timer.selectedDate = selectedDates[0];
     }
   },
 };
+
+startBtnEl.setAttribute('disabled', true);
+startBtnEl.addEventListener('click', () => {
+  timer.start();
+});
 
 flatpickr('#datetime-picker', options);
 
@@ -55,22 +88,4 @@ function convertMs(ms) {
 
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
-}
-
-function onStartBtnClick() {
-  if (isActive) {
-    return clearInterval();
-  }
-  isActive = true;
-  setInterval(() => {
-    const currentTime = Date.now();
-    const resultTime = selectedDate - currentTime;
-    const { days, hours, minutes, seconds } = (convertedTime =
-      convertMs(resultTime));
-    secondsValueEl.textContent = seconds;
-    minutesValueEl.textContent = minutes;
-    hoursValueEl.textContent = hours;
-    daysValueEl.textContent = days;
-    console.log(`${days}:${hours}:${minutes}:${seconds}`);
-  }, 1000);
 }
